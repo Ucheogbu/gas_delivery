@@ -44,9 +44,10 @@ UserData = get_user_model()
 
 # App Endpoints
 
+@check_key()
 def get_orders_view(request):
     # Verify that the user has authorization to access this page
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=400, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if request.method == 'POST':
@@ -67,8 +68,9 @@ def get_orders_view(request):
         else:
             return JSONResponse(status=200, data={'response_code': 200, 'response_status': 'success', 'message': f'No Order Yet!'})
 
+@check_key()
 def get_available_orders_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JsonResponse({'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if request.method == 'POST':
@@ -89,8 +91,9 @@ def get_available_orders_view(request):
         else:
             return JSONResponse(status=200, data={'response_code': 200, 'response_status': 'success', 'message': f'No Order Yet!'})
 
+@check_key()
 def add_order_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=401, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if request.method == 'POST':
@@ -116,8 +119,9 @@ def add_order_view(request):
             else:
                 return JSONResponse(status=201, data={'response_code': 201, 'response_status': 'success', 'message': f'Order Created Successfully', 'data': new_order})            
 
+@check_key()
 def cancel_order_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=400, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if request.method == 'POST':
@@ -137,8 +141,9 @@ def cancel_order_view(request):
             Order.objects.filter(order_id=order_id).update(is_active=False)
             return JSONResponse(status=200, data={'response_code': 200, 'response_status': 'success', 'message': f'Order cancelled successfully'})
 
+@check_key()
 def modify_order_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=400, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if request.method == 'POST':
@@ -167,9 +172,10 @@ def modify_order_view(request):
 
             order.save()
             return JSONResponse(status=200, data={'response_code': 200, 'response_status': 'success', 'message': f'Order Updated Successfully', 'data': model_to_dict(order)})
-             
+
+@check_key()      
 def get_order_history_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=400, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if not user.is_vendor:
@@ -194,8 +200,9 @@ def get_order_history_view(request):
             else:
                 return JSONResponse(status=200, data={'response_code': 200, 'response_status': 'success', 'message': f'No Order Yet!'})
 
+@check_key()
 def accept_order_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=400, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if not user.is_vendor:
@@ -219,9 +226,10 @@ def accept_order_view(request):
             else:
                 Order.objects.filter(order_id=order_id).update(is_accepted=True, vendor=user)
                 return JSONResponse(status=200, data={'response_code': 200, 'response_status': 'success', 'message': f'Order cancelled successfully'})
-            
+
+@check_key()      
 def get_average_ratings_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=400, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if not user.is_vendor:
@@ -242,8 +250,9 @@ def get_average_ratings_view(request):
             else:
                 return JSONResponse(status=200, data={'response_code': 200, 'response_status': 'success', 'message':'Average rating retrieved Successfully', 'data': average_rating})
 
+@check_key()
 def add_review_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=400, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if request.method == 'POST':
@@ -270,8 +279,9 @@ def add_review_view(request):
             else:
                 return JSONResponse(status=200, data={'response_code': 200, 'response_status': 'success', 'message': f'Review created successfully', 'data': rev})
 
+@check_key()
 def change_review_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=400, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if request.method == 'POST':
@@ -297,8 +307,9 @@ def change_review_view(request):
             else:
                 return JSONResponse(status=200, data={'response_code': 200, 'response_status': 'success', 'message': f'Review Updated successfully'})
 
+@check_key()
 def delete_review_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=400, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if request.method == 'POST':
@@ -322,8 +333,9 @@ def delete_review_view(request):
             else:
                 return JSONResponse(status=200, data={'response_code': 200, 'response_status': 'success', 'message': f'Review deleted successfully'})
 
+@check_key()
 def add_comment_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=400, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if request.method == 'POST':
@@ -348,8 +360,9 @@ def add_comment_view(request):
             else:
                 return JSONResponse(status=200, data={'response_code': 200, 'response_status': 'success', 'message': f'Comment Created Successfully', 'data': model_to_dict(comment)})
 
+@check_key()
 def delete_comment_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=400, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if request.method == 'POST':
@@ -372,8 +385,9 @@ def delete_comment_view(request):
                 comment.delete()
                 return JSONResponse(status=200, data={'response_code': 200, 'response_status': 'success', 'message': f'Comment deleted successfully'})
 
+@check_key()
 def get_comments_view(request):
-    user = check_key(request)
+    user = request.user
     if not user:
         return JSONResponse(status=400, data={'response_code': 401, 'response_status': 'error', 'message': f'The request you have made requires authorization'})
     if request.method == 'POST':
