@@ -15,7 +15,7 @@ def check_api_key(get_response):
                 return  JsonResponse({'response_code': 400, 'response_status': 'error', 'message': f'Incomplete data: authorization(API-Key) is invalid'})
             else:
                 userdata = UserData.objects.get(api_key=api_key)
-                user = userata.user            
+                user = userdata.user            
 
         response = get_response(request)
 
@@ -44,7 +44,7 @@ class CheckApi:
                 return  JsonResponse({'response_code': 400, 'response_status': 'error', 'message': f'Incomplete data: authorization(API-Key) is invalid'})
             else:
                 userdata = UserData.objects.get(api_key=api_key)
-                user = userata.user            
+                user = userdata.user            
 
         response = self.get_response(request)
 
