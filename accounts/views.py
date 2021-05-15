@@ -5,20 +5,19 @@ import requests
 import random
 import string
 from pytz import timezone
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.contrib.auth import get_user_model
-from django.contrib.auth import authenticate
-from django.utils.decorators import decorator_from_middleware
-from django.forms.models import model_to_dict
-from rest_framework.renderers import JSONRenderer
+from django.conf import settings as st
 from accounts.models import *
 from .util import get_api_key
-from .helpers.payment import utils
-from functools import wraps
+from .decorators import check_key
+from .token import get_jwt_token, decode_jwt_token
+
+tz = st.TZN
+authprotocol = 'jwt' if st.AUTH_PROTOCOL == 'jwt' else 'custom'
 
 def get_current_date():
-    africa = timezone('Africa/Lagos')
+    africa = timezone(tz)
     return datetime.datetime.now(africa)
 
 def generate_uuid(user_id):
@@ -31,40 +30,12 @@ def generate_uuid(user_id):
     return f'{us1}{rand}{us2}'
 
 
-class JSONResponse(HttpResponse):
-    """
-    An HttpResponse that renders its content into JSON.
-    """
-    def __init__(self, data, **kwargs):
-        content = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json'
-        super(JSONResponse, self).__init__(content, **kwargs)
 
 UserData = get_user_model()
 
 # Create your views here.
 
 # Authentication endpoints
-def check_key(view_func):
-    @wraps(view_func)
-    def check_key_wrapper(request, **kwargs):
-        headers = request.headers
-        print(headers)
-        api_key =  headers.get('authorization', None)
-        print(api_key)
-        if not api_key:
-            return JsonResponse(status=401, data="The request you have made requires authentication")
-        else:
-            if not APIKey.objects.filter(api_key=api_key):
-                return JsonResponse(status=401, data="The request you have made requires authentication")
-            else:
-                key = APIKey.objects.get(api_key=api_key)
-                user = key.user
-                request.user = user
-                return view_func(request, **kwargs)
-    return check_key_wrapper
-        
-
 def add_user_view(request):
     if request.method == 'POST':
         body = request.body.decode('utf-8')
@@ -154,12 +125,17 @@ def get_api_key_view(request):
         if not (email and password):
             return JsonResponse({'response_code': 400, 'response_status': 'error', 'message': f'Incomplete data: email or password cannot be null'})
 
+        
+
         if UserData.objects.filter(email=email):
             user = UserData.objects.get(email=email)
-            if user.check_password(password):
-                return JsonResponse({'response_code': 200, 'response_status': 'success', 'message': {"api_key": user.user_data.api_key}})
+            if authprotocol != 'jwt':
+                if user.check_password(password):
+                    return JsonResponse({'response_code': 200, 'response_status': 'success', 'message': {"api_key": user.user_data.api_key}})
+                else:
+                    return JsonResponse({'response_code': 400, 'response_status': 'error', 'message': f'Incorrect Password'})
             else:
-                return JsonResponse({'response_code': 400, 'response_status': 'error', 'message': f'Incorrect Password'})
+                return JsonResponse({'response_code': 200, 'response_status': 'success', 'message': {"api_key": get_jwt_token(user)}})
         else:
             return JsonResponse({'response_code': 404, 'response_status': 'error', 'message': f'User not Found'})
 
