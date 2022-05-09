@@ -1,3 +1,4 @@
+from accounts.util import get_api_key
 import uuid
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
@@ -24,6 +25,8 @@ class UserManager(BaseUserManager):
 
         user.set_password(password)
         user.save(using=self._db)
+        key = get_api_key()
+        APIKey.objects.create(user=user, api_key=key)
         return user
 
     def create_superuser(self, first_name, last_name, username, email, user_id,fake_password, address, state, country, password):

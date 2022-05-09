@@ -125,8 +125,6 @@ def get_api_key_view(request):
         if not (email and password):
             return JsonResponse({'response_code': 400, 'response_status': 'error', 'message': f'Incomplete data: email or password cannot be null'})
 
-        
-
         if UserData.objects.filter(email=email):
             user = UserData.objects.get(email=email)
             if authprotocol != 'jwt':
