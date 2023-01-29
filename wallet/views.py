@@ -89,7 +89,7 @@ def charge_user_view(request):
 
 
 # wallet Endpoints
-@check_key()
+# @check_key()
 def get_wallet_view(request):
     user = request.user
     if not user:
@@ -109,7 +109,7 @@ def get_wallet_view(request):
             print(f'Error {e}')
             return JSONResponse(status=401, data=e)
 
-@check_key()
+# @check_key()
 def fund_wallet_view(request):
     user = request.user
     if not user:
@@ -152,7 +152,7 @@ def fund_wallet_view(request):
         except Exception as e:
             return JSONResponse(status=401, data=e)
 
-@check_key()
+# @check_key()
 def update_wallet_view(request):
     user = request.user
     if not user:
@@ -177,7 +177,7 @@ def update_wallet_view(request):
             # main_log.error(f'[users.views.py; update_wallet(ln-150)] Error: Unable to fund wallet')
             return JSONResponse(status=401, data=e)
 
-@check_key()
+# @check_key()
 def charge_wallet_view(request):
     user = request.user
     if not user:
@@ -208,7 +208,7 @@ def charge_wallet_view(request):
                 # main_log.info(f'[users.views.py; charge_wallet_view(ln-115)] Success: Charge Successful', user_log=logger)
                 return JSONResponse(status=200, data={'status': 'success', 'trans_ref': transacton_ref})
 
-@check_key()
+# @check_key()
 def get_cards_view(request):
     user = request.user
     if not user:
@@ -233,7 +233,7 @@ def get_cards_view(request):
             print(cards)
             return JSONResponse(status=200, data={'Success!': 'User Updated Successfully', 'cards': cards})
 
-@check_key()
+# @check_key()
 def add_card_view(request):
     user = request.user
     if not user:
@@ -283,7 +283,7 @@ def add_card_view(request):
             else:
                 return JSONResponse(status=400, data={'Error': 'Unknown Gateway'})
 
-@check_key()
+# @check_key()
 def get_transactions_view(request):
     user = request.user
     # if not user:

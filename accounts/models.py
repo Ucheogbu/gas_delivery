@@ -1,4 +1,4 @@
-from accounts.util import get_api_key
+from helpers.util import get_api_key
 import uuid
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager

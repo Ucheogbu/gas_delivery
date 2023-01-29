@@ -9,9 +9,9 @@ from django.http import JsonResponse
 from django.contrib.auth import get_user_model
 from django.conf import settings as st
 from accounts.models import *
-from .decorators import check_key
-from .token import get_jwt_token, decode_jwt_token
-from .helpers.utils import (
+from helpers.decorators import check_key
+from helpers.token import get_jwt_token, decode_jwt_token
+from helpers.utils import (
     create_or_update_user,
     tz,
     authprotocol,
@@ -177,7 +177,7 @@ def get_api_key_view(request):
         )
 
 
-@check_key()
+# @check_key()
 def change_api_key_view(request):
     user = request.user
     if not user:
@@ -233,7 +233,7 @@ def change_api_key_view(request):
         )
 
 
-@check_key()
+# @check_key()
 def change_password_view(request):
     user = request.user
     if not user:

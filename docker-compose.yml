@@ -4,11 +4,15 @@ services:
   db:
     image: postgres
     volumes:
-      - ./data/db:/var/lib/postgresql/data
+      - .:/data/db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    ports:
+      - "${POSTGRES_TEST_PORT}:5432"
+    networks:
+      - delivery-network
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -23,3 +27,7 @@ services:
       - environment=development
     depends_on:
       - db
+    networks:
+      - delivery-network
+networks:
+  delivery-network:
